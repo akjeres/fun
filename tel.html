@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Input type tel. Numbers only</title>
+</head>
+<body>
+<div id="prompt-form-container">
+    <form id="prompt-form">
+        <input name="text" type="tel" placeholder="Phone">
+        <input name="text" type="tel" placeholder="Phone1">
+        <input name="text" type="tel" placeholder="Phone2">
+        <input name="text" type="tel" placeholder="Phone3">
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
+<script>
+    function getCaretPosition (ctrl) {
+        if (document.selection) {
+            ctrl.focus();
+            var range = document.selection.createRange();
+            var rangelen = range.text.length;
+            range.moveStart ('character', -ctrl.value.length);
+            var start = range.text.length - rangelen;
+            return {'start': start, 'end': start + rangelen };
+        } else if (ctrl.selectionStart || ctrl.selectionStart == '0') {
+            return {'start': ctrl.selectionStart, 'end': ctrl.selectionEnd };
+        } else {
+            return {'start': 0, 'd': 0};
+        }
+    }
+
+    function setCaretPosition(ctrl, start, end) {
+        if(ctrl.setSelectionRange) {
+            ctrl.focus();
+            ctrl.setSelectionRange(start, end);
+        } else if (ctrl.createTextRange) {
+            var range = ctrl.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', end);
+            range.moveStart('character', start);
+            range.select();
+        }
+    }
+
+    function DigitTel(input) {
+        this.input = input;
+        var self = this;
+        self.input.addEventListener('input', function(){
+            var prevPosition = getCaretPosition(self.input);
+            var inputVal = self.input.value;
+            var inputArr = inputVal.split('');
+            var result = new String();
+            for (var i = 0; i < inputArr.length; i++) {
+                if (/\d/.test(inputArr[i])) {
+                    result += inputArr[i];
+                } else {
+                    --prevPosition.start;
+                    continue;
+                }
+            }
+            self.input.value = result;
+            setCaretPosition(self.input, prevPosition.start, prevPosition.start);
+        });
+    }
+
+    var inputs = document.querySelectorAll('input[type="tel"]');
+    var digitInputsArr = [];
+    for (var inputsCount = 0; inputsCount < inputs.length; inputsCount++) {
+        digitInputsArr.push(inputs[inputsCount]);
+        digitInputsArr[inputsCount] = new DigitTel(inputs[inputsCount]);
+    }
+</script>
+</body>
+</html>
