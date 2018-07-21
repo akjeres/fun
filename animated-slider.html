@@ -131,6 +131,7 @@
 
             });
             this.slide.on('touchstart', function(e) {
+                alert(1);
                 var flag = true, delta = 30, selectorPosition, direction;
                 if (flag) {
                     selectorPosition = {
@@ -140,6 +141,7 @@
                 }
                 var $self = $(this);
                 $(this).touchmove(function(e) {
+                    alert();
                     var x = e.clientX;
                     direction = x - selectorPosition.x;
                     if (Math.abs(direction) > delta) {
