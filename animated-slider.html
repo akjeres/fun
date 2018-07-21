@@ -140,7 +140,7 @@
                     };
                 }
                 var $self = $(this);
-                $(this).touchmove(function(e) {
+                $(this).on('touchmove', function(e) {
                     alert();
                     var x = e.clientX;
                     direction = x - selectorPosition.x;
