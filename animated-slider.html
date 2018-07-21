@@ -130,6 +130,32 @@
                 });
 
             });
+            this.slide.on('touchstart', function(e) {
+                var flag = true, delta = 30, selectorPosition, direction;
+                if (flag) {
+                    selectorPosition = {
+                        x: e.clientX,
+                        y: e.clientY
+                    };
+                }
+                var $self = $(this);
+                $(this).touchmove(function(e) {
+                    var x = e.clientX;
+                    direction = x - selectorPosition.x;
+                    if (Math.abs(direction) > delta) {
+                        if (direction < 0) {
+                            self.next();
+                        } else {
+                            self.prev();
+                        }
+                        flag = false;
+                        selectorPosition.x = null;
+                        x = null;
+                        $self.unbind('toucnmove');
+                    }
+                });
+
+            });
             this.prevButton.on('click', self.prev);
             this.nextButton.on('click', self.next);
             if (self.autoplay) {
