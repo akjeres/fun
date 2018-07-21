@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Animated Slider</title>
+</head>
+<body>
+    <div class="slider-wrapper first">
+        <div class="one slide">1</div>
+        <div class="two slide">2</div>
+        <div class="three slide">3</div>
+        <div class="four slide">4</div>
+        <div class="five slide">5</div>
+        <div class="six slide">6</div>
+        <div class="seven slide">7</div>
+    </div>
+    <div class="buttons-wrapper first">
+        <button class="prev">Prev</button>
+        <button class="next">Next</button>
+    </div>
+    <div class="slider-wrapper second">
+        <div class="one slide">1</div>
+        <div class="two slide">2</div>
+        <div class="three slide">3</div>
+        <div class="four slide">4</div>
+        <div class="five slide">5</div>
+        <div class="six slide">6</div>
+        <div class="seven slide">7</div>
+    </div>
+    <style>
+        .slider-wrapper {
+            width: 500px;
+            height: 375px;
+            position: relative;
+            background-color: #eee;
+            overflow: hidden;
+        }
+        .slider-wrapper .one {background-color: red}
+        .slider-wrapper .two {background-color: yellow}
+        .slider-wrapper .three {background-color: green}
+        .slider-wrapper .four {background-color: orange}
+        .slider-wrapper .five {background-color: purple}
+        .slider-wrapper .six {background-color: blue}
+        .slider-wrapper .seven {background-color: gold}
+        .slider-wrapper .slide {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            user-select: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+
+        function Slider(obj) {
+            var self = this;
+            var values = {
+                default: {
+                    left: 0,
+                    zIndex: 0
+                },
+                current: {
+                    left: 0,
+                    zIndex: 1
+                },
+                prev: {
+                    left: '100%',
+                    zIndex: 0
+                },
+                next: {
+                    left: '-100%',
+                    zIndex: 0
+                },
+                duration: 300,
+                autoplay: false
+            };
+            this.selector = $(obj.selector);
+            this.slide = self.selector.children('.slide');
+            var sliderLength = self.slide.length;
+            this.prevButton = $(obj.prev);
+            this.nextButton = $(obj.next);
+            this.current = 0;
+            this.autoplay = obj.autoplay || values.autoplay;
+            this.duration = obj.duration || values.duration;
+
+            this.slide.eq(self.current).css(values.current);
+
+            this.next = function () {
+                self.slide.eq(self.current).animate(values.next, this.duration).css(values.default);
+                self.current++;
+                if (self.current > sliderLength - 1) {
+                    self.current = 0;
+                }
+                self.slide.eq(self.current).css(values.prev).animate(values.current, this.duration);
+            };
+            this.prev = function () {
+                self.slide.eq(self.current).animate(values.prev, this.duration).css(values.default);
+                self.current--;
+                if (self.current < 0) {
+                    self.current = sliderLength - 1;
+                }
+                self.slide.eq(self.current).css(values.next).animate(values.current, this.duration);
+            };
+            this.slide.on('mousedown', function(e) {
+                var flag = true, delta = 30, selectorPosition, direction;
+                if (flag) {
+                    selectorPosition = {
+                        x: e.clientX,
+                        y: e.clientY
+                    };
+                }
+                var $self = $(this);
+                $(this).mousemove(function(e) {
+                    var x = e.clientX;
+                    direction = x - selectorPosition.x;
+                    if (Math.abs(direction) > delta) {
+                        if (direction < 0) {
+                            self.next();
+                        } else {
+                            self.prev();
+                        }
+                        flag = false;
+                        selectorPosition.x = null;
+                        x = null;
+                        $self.unbind('mousemove');
+                    }
+                });
+
+            });
+            this.prevButton.on('click', self.prev);
+            this.nextButton.on('click', self.next);
+            if (self.autoplay) {
+                this.autoplay = setInterval(self.next, self.autoplay);
+            }
+        }
+
+        var slider1 = new Slider({
+            selector: '.slider-wrapper.first',
+            prev: '.buttons-wrapper.first .prev',
+            next: '.buttons-wrapper.first .next',
+            //autoplay: 3000
+        }), slider2 = new Slider({
+            selector: '.slider-wrapper.second',
+            //autoplay: 1500
+        });
+    </script>
+</body>
+</html>
